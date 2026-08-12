@@ -1,0 +1,14 @@
+[
+  {
+    "id": 1,
+    "name": "Juan Dela Cruz",
+    "course": "BSIT",
+    "year": 2
+  },
+  {
+    "id": 2,
+    "name": "Maria Santos",
+    "course": "BSCS",
+    "year": 1
+  }
+]
