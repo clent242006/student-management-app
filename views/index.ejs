@@ -1,64 +1,80 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Student Management System</title>
-    <link rel="stylesheet" href="/style.css">
-</head>
-
-<body>
+<%- include('partials/head', { title }) %>
 
 <div class="container">
 
     <h1>Student Management System</h1>
 
-    <a href="/add" class="btn">+ Add Student</a>
+    <% if (typeof flash !== 'undefined' && flash) { %>
+        <div class="alert alert-<%= flash.type %>"><%= flash.text %></div>
+    <% } %>
 
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Course</th>
-                <th>Year</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
+    <div class="toolbar">
+        <a href="/add" class="btn">+ Add Student</a>
+        <form action="/" method="GET" class="search-form">
+            <input
+                type="text"
+                name="search"
+                placeholder="Search by name, course, or year..."
+                value="<%= typeof search !== 'undefined' ? search : '' %>"
+            >
+            <button type="submit">Search</button>
+        </form>
+    </div>
 
-        <tbody>
-            <% students.forEach(student => { %>
+    <% if (typeof total !== 'undefined' && typeof search !== 'undefined' && search) { %>
+        <p class="result-info">
+            Showing <strong><%= students.length %></strong> of <strong><%= total %></strong> students
+            <% if (students.length === 0) { %>
+                — no match for "<%= search %>".
+            <% } %>
+        </p>
+    <% } %>
 
-            <tr>
-                <td><%= student.id %></td>
-                <td><%= student.name %></td>
-                <td><%= student.course %></td>
-                <td><%= student.year %></td>
-
-                <td>
-                    <a href="/edit/<%= student.id %>" class="edit">
-                        Edit
-                    </a>
-
-                    <form
-                        action="/delete/<%= student.id %>"
-                        method="POST"
-                        style="display:inline;"
-                    >
-                        <button
-                            type="submit"
-                            class="delete"
-                            onclick="return confirm('Delete this student?')"
+    <% if (students.length === 0 && typeof search !== 'undefined' && search) { %>
+        <p class="empty">No students match your search.</p>
+    <% } else if (students.length === 0) { %>
+        <p class="empty">No students yet. Click "+ Add Student" to get started.</p>
+    <% } else { %>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Course</th>
+                    <th>Year</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% students.forEach(student => { %>
+                <tr>
+                    <td><%= student.id %></td>
+                    <td><%= student.name %></td>
+                    <td><span class="badge"><%= student.course %></span></td>
+                    <td><span class="badge badge-year">Year <%= student.year %></span></td>
+                    <td>
+                        <a href="/edit/<%= student.id %>" class="edit">Edit</a>
+                        <form
+                            action="/delete/<%= student.id %>"
+                            method="POST"
+                            style="display:inline;"
                         >
-                            Delete
-                        </button>
-                    </form>
-                </td>
-            </tr>
-
-            <% }) %>
-        </tbody>
-    </table>
+                            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                            <button
+                                type="submit"
+                                class="delete"
+                                onclick="return confirm('Delete this student?')"
+                            >
+                                Delete
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    <% } %>
 
 </div>
 
-</body>
-</html>
+<%- include('partials/footer') %>
